@@ -5,7 +5,6 @@ import Homepage from "./pages/homepage";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <div>wassup</div>
     <Homepage></Homepage>
   </StrictMode>
 );
