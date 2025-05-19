@@ -1,7 +1,8 @@
 import React, { Fragment } from "react";
+import axios from "axios";
 
 export default function login() {
-  function login() {
+  async function login() {
     const username = document.getElementById("username");
     const password = document.getElementById("password");
     let flag = false;
@@ -17,8 +18,18 @@ export default function login() {
       flag = true;
     }
     if (flag) {
-      console.log("test");
       return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        username: username.value,
+        password: password.value,
+      });
+
+      console.log("Server says:", response.data.message);
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
     }
   }
   return (
