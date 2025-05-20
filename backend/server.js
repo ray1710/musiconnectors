@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import session from "express-session";
 import cors from "cors";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
@@ -7,6 +8,15 @@ import User from "./models/user.model.js";
 dotenv.config();
 const app = express();
 const port = 3000;
+
+app.use(express.urlencoded({ extended: true })); // For form data
+app.use(
+  session({
+    secret: "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
 app.use(express.json());
 
@@ -70,6 +80,7 @@ app.post("/login", async (req, res) => {
       details["username"] == user[0]["username"] &&
       details["password"] == user[0]["password"]
     ) {
+      req.session.user = { details };
       res.json({ message: "Correct!" });
     } else {
       res.json({ message: "Wrong!" });
