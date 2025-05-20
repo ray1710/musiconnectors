@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
 
@@ -8,6 +9,13 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
@@ -62,9 +70,9 @@ app.post("/login", async (req, res) => {
       details["username"] == user[0]["username"] &&
       details["password"] == user[0]["password"]
     ) {
-      res.send("Login Sucessful");
+      res.json({ message: "Correct!" });
     } else {
-      res.send("Login Failed");
+      res.json({ message: "Wrong!" });
     }
   } catch (error) {
     res.status(500);
