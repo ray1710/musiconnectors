@@ -1,7 +1,9 @@
 import React, { Fragment } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function login() {
+  const navigate = useNavigate();
   async function login() {
     const username = document.getElementById("username");
     const password = document.getElementById("password");
@@ -27,9 +29,13 @@ export default function login() {
         password: password.value,
       });
 
-      console.log("Server says:", response.data.message);
+      console.log(response.status);
+
+      if (response.status == 200) {
+        navigate("/mainpage");
+      }
     } catch (error) {
-      console.error("Login error:", error.response?.data || error.message);
+      document.getElementById("error").innerHTML = "Wrong Password Or Username";
     }
   }
   return (
@@ -63,6 +69,9 @@ export default function login() {
         >
           Login
         </button>
+      </div>
+      <div className="text-center text-red-500 pt-10">
+        <p id="error"></p>
       </div>
     </Fragment>
   );

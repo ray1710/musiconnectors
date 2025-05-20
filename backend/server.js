@@ -75,15 +75,15 @@ app.post("/login", async (req, res) => {
       "username password"
     ).exec();
     if (user == "") {
-      res.json({ message: "Wrong!" });
+      res.status(401).json({ message: "Wrong!" });
     } else if (
       details["username"] == user[0]["username"] &&
       details["password"] == user[0]["password"]
     ) {
       req.session.user = { details };
-      res.json({ message: "Correct!" });
+      res.status(200).json({ message: "Correct!" });
     } else {
-      res.json({ message: "Wrong!" });
+      res.status(401).json({ message: "Wrong!" });
     }
   } catch (error) {
     res.status(500);
