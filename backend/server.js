@@ -65,7 +65,7 @@ app.post("/login", async (req, res) => {
       "username password"
     ).exec();
     if (user == "") {
-      res.send("Login Failed");
+      res.json({ message: "Wrong!" });
     } else if (
       details["username"] == user[0]["username"] &&
       details["password"] == user[0]["password"]
