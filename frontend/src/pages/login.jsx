@@ -1,7 +1,9 @@
 import React, { Fragment } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function login() {
+  const navigate = useNavigate();
   async function login() {
     const username = document.getElementById("username");
     const password = document.getElementById("password");
@@ -28,6 +30,7 @@ export default function login() {
       });
 
       console.log("Server says:", response.data.message);
+      navigate("/mainpage");
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
     }
