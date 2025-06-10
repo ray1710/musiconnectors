@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import bcrypt from "bcryptjs";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
 
@@ -25,26 +26,28 @@ app.get("/", (req, res) => {
  * New user
  */
 app.post("/signup", async (req, res) => {
-  const user = req.body;
+  const { username, password } = req.body;
 
   let check;
   //Check if User Already Exists
   try {
-    check = await User.find({ username: user["username"] }).exec();
+    check = await User.find({ username }).exec();
   } catch (error) {
     throw error;
   }
-  console.log(check);
+
   if (check != "") {
     res.send("Account Already Exists");
     return;
   }
-  const newUser = new User(user);
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(hashedPassword);
+  const newUser = new User({ username, password: hashedPassword });
   try {
     await newUser.save();
-    res.send("Sucess");
+    res.status(200).send("Sucess");
   } catch (error) {
-    res.send("Failed");
+    res.status(500).send("Failed");
   }
 });
 
@@ -65,9 +68,9 @@ app.post("/login", async (req, res) => {
       details["username"] == user[0]["username"] &&
       details["password"] == user[0]["password"]
     ) {
-      res.json({ message: "Correct!" });
+      res.status(200).json({ message: "Correct!" });
     } else {
-      res.json({ message: "Wrong!" });
+      res.status(500).json({ message: "Wrong!" });
     }
   } catch (error) {
     res.status(500);
