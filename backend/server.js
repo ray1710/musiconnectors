@@ -2,12 +2,14 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
 
 dotenv.config();
 const app = express();
 const port = 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
 
@@ -55,26 +57,26 @@ app.post("/signup", async (req, res) => {
  * Login currrent user
  */
 app.post("/login", async (req, res) => {
-  const details = req.body;
+  const { username, password } = req.body;
 
-  try {
-    const user = await User.find(
-      { username: details["username"] },
-      "username password"
-    ).exec();
-    if (user == "") {
-      res.json({ message: "Wrong!" });
-    } else if (
-      details["username"] == user[0]["username"] &&
-      details["password"] == user[0]["password"]
-    ) {
-      res.status(200).json({ message: "Correct!" });
-    } else {
-      res.status(500).json({ message: "Wrong!" });
-    }
-  } catch (error) {
-    res.status(500);
+  const user = await User.findOne({ username }).exec();
+  if (!user) {
+    res.status(500).send("No User");
   }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!passwordMatch) {
+    res.status(500).send("Error");
+  }
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    JWT_SECRET,
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  res.json({ message: "Correct", token });
 });
 
 app.listen(port, () => {
