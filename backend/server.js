@@ -21,11 +21,6 @@ app.get("/", (req, res) => {
   res.send("Server is ready");
 });
 
-app.listen(port, () => {
-  connectDB();
-  console.log(`Listening on port ${port}`);
-});
-
 /**
  * New user
  */
@@ -77,4 +72,9 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500);
   }
+});
+
+app.listen(port, () => {
+  connectDB();
+  console.log(`Listening on port ${port}`);
 });
