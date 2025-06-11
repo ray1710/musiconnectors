@@ -1,7 +1,30 @@
-import React from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import axios from "axios";
 
-const mainpage = () => {
-  return <div>mainpage</div>;
-};
+export default function MainPage() {
+  const [user, setUser] = useState(null);
 
-export default mainpage;
+  useEffect(() => {
+    async function getProfile() {
+      try {
+        const token = localStorage.getItem("Token");
+        const res = await axios.get("http://localhost:3000/currentuser", {
+          headers: {
+            Authorization: token,
+          },
+        });
+        setUser(res.data.user);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    }
+
+    getProfile();
+  }, []);
+
+  return (
+    <Fragment>
+      <div>{user.username}</div>
+    </Fragment>
+  );
+}
