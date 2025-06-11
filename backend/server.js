@@ -20,8 +20,28 @@ app.use(
   })
 );
 
+const verifyToken = (req, res, next) => {
+  const auth = req.headers.authorization;
+  if (!auth) {
+    return res.status(403).json({ message: "No token" });
+  }
+
+  try {
+    const decoded = jwt.verify(auth, JWT_SECRET);
+    console.log(decoded);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid" });
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Server is ready");
+});
+
+app.get("/currentuser", verifyToken, (req, res) => {
+  res.status(200).json({ message: "This is protected", user: req.user });
 });
 
 /**
