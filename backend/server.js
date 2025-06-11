@@ -1,12 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
 
 dotenv.config();
 const app = express();
 const port = 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(express.json());
 
@@ -17,39 +20,56 @@ app.use(
   })
 );
 
+const verifyToken = (req, res, next) => {
+  const auth = req.headers.authorization;
+  if (!auth) {
+    return res.status(403).json({ message: "No token" });
+  }
+
+  try {
+    const decoded = jwt.verify(auth, JWT_SECRET);
+    console.log(decoded);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid" });
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
 
-app.listen(port, () => {
-  connectDB();
-  console.log(`Listening on port ${port}`);
+app.get("/currentuser", verifyToken, (req, res) => {
+  res.status(200).json({ message: "This is protected", user: req.user });
 });
 
 /**
  * New user
  */
 app.post("/signup", async (req, res) => {
-  const user = req.body;
+  const { username, password } = req.body;
 
   let check;
   //Check if User Already Exists
   try {
-    check = await User.find({ username: user["username"] }).exec();
+    check = await User.find({ username }).exec();
   } catch (error) {
     throw error;
   }
-  console.log(check);
+
   if (check != "") {
     res.send("Account Already Exists");
     return;
   }
-  const newUser = new User(user);
+  const hashedPassword = await bcrypt.hash(password, 10);
+  console.log(hashedPassword);
+  const newUser = new User({ username, password: hashedPassword });
   try {
     await newUser.save();
-    res.send("Sucess");
+    res.status(200).send("Sucess");
   } catch (error) {
-    res.send("Failed");
+    res.status(500).send("Failed");
   }
 });
 
@@ -57,24 +77,29 @@ app.post("/signup", async (req, res) => {
  * Login currrent user
  */
 app.post("/login", async (req, res) => {
-  const details = req.body;
+  const { username, password } = req.body;
 
-  try {
-    const user = await User.find(
-      { username: details["username"] },
-      "username password"
-    ).exec();
-    if (user == "") {
-      res.json({ message: "Wrong!" });
-    } else if (
-      details["username"] == user[0]["username"] &&
-      details["password"] == user[0]["password"]
-    ) {
-      res.json({ message: "Correct!" });
-    } else {
-      res.json({ message: "Wrong!" });
-    }
-  } catch (error) {
-    res.status(500);
+  const user = await User.findOne({ username }).exec();
+  if (!user) {
+    res.status(500).send("No User");
   }
+
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!passwordMatch) {
+    res.status(500).send("Error");
+  }
+  const token = jwt.sign(
+    { id: user._id, username: user.username },
+    JWT_SECRET,
+    {
+      expiresIn: "1h",
+    }
+  );
+
+  res.json({ message: "Correct", token });
+});
+
+app.listen(port, () => {
+  connectDB();
+  console.log(`Listening on port ${port}`);
 });
