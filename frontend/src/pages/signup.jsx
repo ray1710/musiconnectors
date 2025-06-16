@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Fragment } from "react";
 
 export default function signup() {
@@ -32,6 +33,18 @@ export default function signup() {
     if (flag) {
       return;
     }
+    if (password.value != confirmpassword.value) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    try {
+      const result = await axios.post("http://localhost:3000/signup", {
+        username: username.value,
+        email: username.value,
+        password: password.value,
+      });
+    } catch (error) {}
   }
   return (
     <Fragment>
