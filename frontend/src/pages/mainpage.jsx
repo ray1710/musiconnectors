@@ -24,7 +24,11 @@ export default function MainPage() {
 
   return (
     <Fragment>
-      <div>{user.username}</div>
+      {user ? (
+        <h1>Welcome, {user.username}</h1>
+      ) : (
+        <p>Loading user profile...</p>
+      )}
     </Fragment>
   );
 }
