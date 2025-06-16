@@ -1,6 +1,38 @@
 import React, { Fragment } from "react";
 
 export default function signup() {
+  async function registerUser() {
+    const email = document.getElementById("email");
+    const username = document.getElementById("username");
+    const password = document.getElementById("password");
+    const confirmpassword = document.getElementById("confirmPassword");
+
+    let flag = false;
+
+    if (email.value == "") {
+      email.classList.add("border-red-500", "ring-2", "ring-red-500");
+      email.placeholder = "Please Enter Email";
+      flag = true;
+    }
+    if (username.value == "") {
+      username.classList.add("border-red-500", "ring-2", "ring-red-500");
+      username.placeholder = "Please Enter Username";
+      flag = true;
+    }
+    if (password.value == "") {
+      password.classList.add("border-red-500", "ring-2", "ring-red-500");
+      password.placeholder = "Please Enter Password";
+      flag = true;
+    }
+    if (confirmpassword.value == "") {
+      confirmpassword.classList.add("border-red-500", "ring-2", "ring-red-500");
+      confirmpassword.placeholder = "Please Enter Password";
+      flag = true;
+    }
+    if (flag) {
+      return;
+    }
+  }
   return (
     <Fragment>
       <div className="text-center pt-25">
@@ -44,6 +76,7 @@ export default function signup() {
         <button
           type="button"
           className="w-32 h-10 text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
+          onClick={registerUser}
         >
           Signup
         </button>
