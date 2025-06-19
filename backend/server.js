@@ -50,15 +50,17 @@ app.get("/currentuser", verifyToken, (req, res) => {
 app.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
 
-  let check;
+  let usernameCheck;
+  let emailCheck;
   //Check if User Already Exists
   try {
-    check = await User.find({ username }).exec();
+    usernameCheck = await User.find({ username }).exec();
+    emailCheck = await User.find({ email }).exec();
   } catch (error) {
     throw error;
   }
 
-  if (check != "") {
+  if (usernameCheck != "" || emailCheck != "") {
     res.json({ message: "Invalid Account Creation" });
     return;
   }
