@@ -47,27 +47,30 @@ app.get("/currentuser", verifyToken, (req, res) => {
  * New user
  */
 app.post("/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, email, password } = req.body;
 
-  let check;
+  let usernameCheck;
+  let emailCheck;
   //Check if User Already Exists
   try {
-    check = await User.find({ username }).exec();
+    usernameCheck = await User.find({ username }).exec();
+    emailCheck = await User.find({ email }).exec();
   } catch (error) {
     throw error;
   }
 
-  if (check != "") {
-    res.send("Account Already Exists");
+  if (usernameCheck != "" || emailCheck != "") {
+    res.json({ message: "Invalid Account Creation" });
     return;
   }
   const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = new User({ username, password: hashedPassword });
+
+  const newUser = new User({ username, email, password: hashedPassword });
   try {
     await newUser.save();
-    res.status(200).send("Sucess");
+    res.status(200).json({ message: "Valid Account Creation" });
   } catch (error) {
-    res.status(500).send("Failed");
+    res.status(500).json({ message: "Invalid Account Creation" });
   }
 });
 
