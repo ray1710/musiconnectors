@@ -28,7 +28,6 @@ const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(auth, JWT_SECRET);
-    console.log(decoded);
     req.user = decoded;
     next();
   } catch (error) {
@@ -65,6 +64,7 @@ app.post("/signup", async (req, res) => {
     return;
   }
   const hashedPassword = await bcrypt.hash(password, 10);
+
   const newUser = new User({ username, email, password: hashedPassword });
   try {
     await newUser.save();

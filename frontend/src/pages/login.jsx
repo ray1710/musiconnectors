@@ -30,6 +30,7 @@ export default function login() {
       });
 
       console.log("Server says:", response.data.message);
+      localStorage.setItem("Token", response.data.token);
       navigate("/mainpage");
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
