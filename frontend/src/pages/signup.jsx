@@ -44,7 +44,10 @@ export default function signup() {
         email: username.value,
         password: password.value,
       });
-    } catch (error) {}
+      console.log(result.data.message);
+    } catch (error) {
+      console.log(result.data.message);
+    }
   }
   return (
     <Fragment>
