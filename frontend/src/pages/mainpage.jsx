@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function MainPage() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -16,6 +18,7 @@ export default function MainPage() {
         setUser(res.data.user);
       } catch (error) {
         console.error("Error fetching profile:", error);
+        navigate("/");
       }
     }
 
