@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 
 const genres = [
@@ -29,13 +30,32 @@ export default function GenreSelector() {
     );
   };
 
-  const handleContinue = () => {
+  async function handleContinue() {
     console.log("Genres:", selectedGenres);
     console.log("Favorite Song:", favSong);
     console.log("Favorite Lyric:", favLyric);
     console.log("Favorite Artist:", favArtist);
-    // You can navigate to the next page or save the data here
-  };
+    if (
+      selectedGenres == "" ||
+      favSong == "" ||
+      favLyric == "" ||
+      favArtist == ""
+    ) {
+      alert("Please fill out the page");
+      return;
+    }
+
+    try {
+      const result = await axios.post("http://localhost:3000/userinfo", {
+        genres: selectedGenres,
+        song: favSong,
+        lyric: favLyric,
+        artist: favArtist,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-800 to-black flex flex-col items-center py-10 px-4">
