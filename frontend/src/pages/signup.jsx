@@ -1,7 +1,9 @@
 import axios from "axios";
 import React, { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function signup() {
+  const navigate = useNavigate();
   async function registerUser() {
     const email = document.getElementById("email");
     const username = document.getElementById("username");
@@ -44,9 +46,23 @@ export default function signup() {
         email: email.value,
         password: password.value,
       });
-      console.log(result.data.message);
     } catch (error) {
-      console.log(result.data.message);
+      throw error;
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3000/login", {
+        username: username.value,
+        password: password.value,
+      });
+
+      console.log("Server says:", response.data.message);
+      localStorage.setItem("Token", response.data.token);
+      navigate("/customize");
+    } catch (error) {
+      throw error;
+      return;
     }
   }
   return (
