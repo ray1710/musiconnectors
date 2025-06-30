@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import axios from "axios";
 import { connectDB } from "./db.js";
 import User from "./models/user.model.js";
 
@@ -10,6 +11,8 @@ dotenv.config();
 const app = express();
 const port = 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
 app.use(express.json());
 
@@ -19,6 +22,31 @@ app.use(
     credentials: true,
   })
 );
+
+export async function getSpotifyToken() {
+  try {
+    const tokenRes = await axios.post(
+      "https://accounts.spotify.com/api/token",
+      new URLSearchParams({ grant_type: "client_credentials" }).toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization:
+            "Basic " +
+            Buffer.from(
+              `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+            ).toString("base64"),
+        },
+      }
+    );
+
+    console.log("Spotify Access Token:", tokenRes.data.access_token); // Debug
+    return tokenRes.data.access_token;
+  } catch (error) {
+    console.error("Token Error:", error.response?.data || error.message);
+    throw error;
+  }
+}
 
 const verifyToken = (req, res, next) => {
   const auth = req.headers.authorization;
@@ -99,6 +127,22 @@ app.post("/login", async (req, res) => {
 
   res.json({ message: "Correct", token });
 });
+/**
+app.get("/genres", async (req, res) => {
+  const token = await getSpotifyToken();
+
+  const response = await axios.get(
+    "https://api.spotify.com/v1/recommendations/available-genre-seeds",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  res.json(response.data);
+});
+**/
 
 app.listen(port, () => {
   connectDB();
