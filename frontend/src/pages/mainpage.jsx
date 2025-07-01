@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import axios from "axios";
+import Header from "../components/header";
 import { useNavigate } from "react-router-dom";
 
 export default function MainPage() {
@@ -27,11 +28,14 @@ export default function MainPage() {
 
   return (
     <Fragment>
-      {user ? (
-        <h1>Welcome, {user.username}</h1>
-      ) : (
-        <p>Loading user profile...</p>
-      )}
+      <Header />
+      <div className="pt-20">
+        {user ? (
+          <h1>Welcome, {user.username}</h1>
+        ) : (
+          <p>Loading user profile...</p>
+        )}
+      </div>
     </Fragment>
   );
 }
