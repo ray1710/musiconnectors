@@ -5,6 +5,10 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   age: Number,
+  genres: [String],
+  favSong: String,
+  favArtist: String,
+  favLyric: String,
 });
 
 const User = mongoose.model("User", userSchema);

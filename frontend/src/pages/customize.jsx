@@ -1,5 +1,6 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const genres = [
   "Pop",
@@ -23,6 +24,15 @@ export default function GenreSelector() {
   const [favSong, setFavSong] = useState("");
   const [favArtist, setFavArtist] = useState("");
   const [favLyric, setFavLyric] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("Token");
+    console.log(token);
+    if (!token) {
+      navigate("/");
+    }
+  }, []);
 
   const toggleGenre = (genre) => {
     setSelectedGenres((prev) =>
@@ -46,12 +56,20 @@ export default function GenreSelector() {
     }
 
     try {
-      const result = await axios.post("http://localhost:3000/userinfo", {
-        genres: selectedGenres,
-        song: favSong,
-        lyric: favLyric,
-        artist: favArtist,
-      });
+      await axios.post(
+        "http://localhost:3000/addCustomizedInfo",
+        {
+          genres: selectedGenres,
+          song: favSong,
+          lyric: favLyric,
+          artist: favArtist,
+        },
+        {
+          headers: {
+            Authorization: localStorage.getItem("Token"),
+          },
+        }
+      );
     } catch (error) {
       throw error;
     }
