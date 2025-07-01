@@ -127,6 +127,28 @@ app.post("/login", async (req, res) => {
 
   res.json({ message: "Correct", token });
 });
+app.post("/addCustomizedInfo", verifyToken, async (req, res) => {
+  const { genres, song, lyric, artist } = req.body;
+  const userID = req.user.id;
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userID,
+      {
+        $set: {
+          genres,
+          favSong: song,
+          favLyric: lyric,
+          favArtist: artist,
+        },
+      },
+      { new: true }
+    );
+    res.status(200).json({ message: "User info updated sucessfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to Updated User Customization" });
+  }
+});
 /**
 app.get("/genres", async (req, res) => {
   const token = await getSpotifyToken();
