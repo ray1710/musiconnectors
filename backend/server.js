@@ -40,12 +40,57 @@ export async function getSpotifyToken() {
       }
     );
 
-    console.log("Spotify Access Token:", tokenRes.data.access_token); // Debug
     return tokenRes.data.access_token;
   } catch (error) {
     console.error("Token Error:", error.response?.data || error.message);
     throw error;
   }
+}
+
+export async function getAlbumsFromGenres(genre, token) {
+  let artists;
+  try {
+    const result = await axios.get(
+      `https://api.spotify.com/v1/search?q=genre%3A${genre}&type=artist&limit=5`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    artists = result.data.artists.items;
+  } catch (error) {
+    console.log("Spotify API Error");
+    throw error;
+  }
+  const artistIds = artists
+    .filter((artist) => artist.id)
+    .map((artist) => artist.id);
+  let albums = [];
+  for (let i = 0; i < artistIds.length; i++) {
+    try {
+      const result = await axios.get(
+        `https://api.spotify.com/v1/artists/${artistIds[i]}/albums?include_groups=album&limit=1`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      let items = result.data.items;
+      albums.push({
+        name: items[0].name,
+        artist: items[0].artists[0].name,
+        num_of_tracks: items[0].total_tracks,
+        release_date: items[0].release_date,
+        image: items[0].images[1].url,
+      });
+    } catch (error) {
+      console.log("Spotify API Error");
+      throw error;
+    }
+  }
+  return albums;
 }
 
 const verifyToken = (req, res, next) => {
@@ -69,6 +114,18 @@ app.get("/", (req, res) => {
 
 app.get("/currentuser", verifyToken, (req, res) => {
   res.status(200).json({ message: "This is protected", user: req.user });
+});
+
+app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
+  const username = req.user.username;
+  const user = await User.findOne({ username }).exec();
+  const spotifyToken = await getSpotifyToken();
+  let genres = user.genres;
+  let result = [];
+  for (let i = 0; i < genres.length; i++) {
+    result.push(await getAlbumsFromGenres(genres[i], spotifyToken));
+  }
+  res.status(200).json({ result });
 });
 
 /**
@@ -149,22 +206,6 @@ app.post("/addCustomizedInfo", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Failed to Updated User Customization" });
   }
 });
-/**
-app.get("/genres", async (req, res) => {
-  const token = await getSpotifyToken();
-
-  const response = await axios.get(
-    "https://api.spotify.com/v1/recommendations/available-genre-seeds",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  res.json(response.data);
-});
-**/
 
 app.listen(port, () => {
   connectDB();
