@@ -60,7 +60,7 @@ export async function getAlbumsFromGenres(genre, token) {
     );
     artists = result.data.artists.items;
   } catch (error) {
-    console.log("Spotify API Error");
+    console.log("Spotify API Error: Failed to Fetch Artists");
     throw error;
   }
   const artistIds = artists
@@ -78,15 +78,18 @@ export async function getAlbumsFromGenres(genre, token) {
         }
       );
       let items = result.data.items;
-      albums.push({
-        name: items[0].name,
-        artist: items[0].artists[0].name,
-        num_of_tracks: items[0].total_tracks,
-        release_date: items[0].release_date,
-        image: items[0].images[1].url,
-      });
+
+      if (items.length != 0) {
+        albums.push({
+          name: items[0].name,
+          artist: items[0].artists[0].name,
+          num_of_tracks: items[0].total_tracks,
+          release_date: items[0].release_date,
+          image: items[0].images[1].url,
+        });
+      }
     } catch (error) {
-      console.log("Spotify API Error");
+      console.log("Spotify API Error: Failed to Fetch Albums");
       throw error;
     }
   }

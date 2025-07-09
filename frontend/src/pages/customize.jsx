@@ -4,15 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 const genres = [
   "Pop",
-  "Hip-Hop",
+  "HipHop",
   "Rock",
-  "EDM",
   "Indie",
   "Jazz",
   "Classical",
-  "R&B",
-  "Reggae",
-  "Folk",
   "Metal",
   "Blues",
   "Country",
