@@ -24,7 +24,6 @@ export default function GenreSelector() {
 
   useEffect(() => {
     const token = localStorage.getItem("Token");
-    console.log(token);
     if (!token) {
       navigate("/");
     }
@@ -52,7 +51,7 @@ export default function GenreSelector() {
     }
 
     try {
-      await axios.post(
+      const result = await axios.post(
         "http://localhost:3000/addCustomizedInfo",
         {
           genres: selectedGenres,
@@ -66,6 +65,10 @@ export default function GenreSelector() {
           },
         }
       );
+      if (result.status == 200) {
+        alert(result.data.message);
+        navigate("/mainpage");
+      }
     } catch (error) {
       throw error;
     }
