@@ -55,9 +55,11 @@ export default function MainPage() {
           <h1 className="text-2xl mb-4 text-center">
             Welcome, {user.username}
           </h1>
-          {albums.map((album, index) => (
-            <Album name={album["name"]} img={album["image"]} />
-          ))}
+          <div className="flex flex-col items-center gap-6">
+            {albums.map((album, index) => (
+              <Album key={index} name={album.name} img={album.image} />
+            ))}
+          </div>
         </div>
       ) : (
         <p>Loading user profile...</p>
