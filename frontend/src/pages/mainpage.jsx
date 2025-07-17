@@ -57,7 +57,7 @@ export default function MainPage() {
           </h1>
           <div className="flex flex-col items-center gap-6">
             {albums.map((album, index) => (
-              <Album key={index} name={album.name} img={album.image} />
+              <Album key={index} album={album} />
             ))}
           </div>
         </div>
