@@ -78,14 +78,21 @@ export async function getAlbumsFromGenres(genre, token) {
         }
       );
       let items = result.data.items;
-
       if (items.length != 0) {
+        let artists = "";
+        for (let i = 0; i < items[0].artists.length; i++) {
+          artists += items[0].artists[i].name;
+          if (i != items[0].artists.length - 1) {
+            artists += ", ";
+          }
+        }
         albums.push({
           name: items[0].name,
-          artist: items[0].artists[0].name,
+          artist: artists,
           num_of_tracks: items[0].total_tracks,
           release_date: items[0].release_date,
           image: items[0].images[1].url,
+          id: items[0].id,
         });
       }
     } catch (error) {
@@ -94,6 +101,14 @@ export async function getAlbumsFromGenres(genre, token) {
     }
   }
   return albums;
+}
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
 
 const verifyToken = (req, res, next) => {
@@ -125,9 +140,12 @@ app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
   const spotifyToken = await getSpotifyToken();
   let genres = user.genres;
   let result = [];
-  for (let i = 0; i < genres.length; i++) {
-    result.push(await getAlbumsFromGenres(genres[i], spotifyToken));
+
+  for (const genre of genres) {
+    const albums = await getAlbumsFromGenres(genre, spotifyToken);
+    result = result.concat(albums);
   }
+  result = shuffle(result);
   res.status(200).json({ result });
 });
 
