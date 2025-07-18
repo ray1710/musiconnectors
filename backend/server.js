@@ -79,16 +79,9 @@ export async function getAlbumsFromGenres(genre, token) {
       );
       let items = result.data.items;
       if (items.length != 0) {
-        let artists = "";
-        for (let i = 0; i < items[0].artists.length; i++) {
-          artists += items[0].artists[i].name;
-          if (i != items[0].artists.length - 1) {
-            artists += ", ";
-          }
-        }
         albums.push({
           name: items[0].name,
-          artist: artists,
+          artist: getArtistsFromAlbums(items[0].artists),
           num_of_tracks: items[0].total_tracks,
           release_date: items[0].release_date,
           image: items[0].images[1].url,
@@ -110,7 +103,21 @@ function shuffle(array) {
   }
   return array;
 }
+function getArtistsFromAlbums(arr) {
+  let artists = "";
+  for (let i = 0; i < arr.length; i++) {
+    artists += arr[i].name;
+    if (i != arr.length - 1) {
+      artists += ", ";
+    }
+  }
+  return artists;
+}
 
+function getTracksFromAlbums(tracks) {
+  console.log(tracks);
+  return [];
+}
 const verifyToken = (req, res, next) => {
   const auth = req.headers.authorization;
   if (!auth) {
@@ -147,6 +154,29 @@ app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
   }
   result = await shuffle(result);
   res.status(200).json({ result });
+});
+
+app.get("/album/:id", async (req, res) => {
+  const token = await getSpotifyToken();
+
+  let album = await axios.get(
+    `https://api.spotify.com/v1/albums/${req.params.id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  res.status(200).json({
+    name: album.data.name,
+    artist: getArtistsFromAlbums(album.data.artists),
+    num_of_tracks: album.data.total_tracks,
+    release_date: album.data.release_date,
+    image: album.data.images[1].url,
+    id: album.data.id,
+    tracks: getTracksFromAlbums(album.data.tracks),
+  });
 });
 
 /**
