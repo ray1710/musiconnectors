@@ -35,7 +35,7 @@ export default function MainPage() {
             },
           }
         );
-        setAlbums(res.data.result[0]);
+        setAlbums(res.data.result);
       } catch (error) {
         console.error("Error fetching albums:", error);
       }

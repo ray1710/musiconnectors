@@ -9,15 +9,13 @@ import Mainpage from "./pages/mainpage";
 import Customize from "./pages/customize";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/mainpage" element={<Mainpage />} />
-        <Route path="/customize" element={<Customize />} />
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<Homepage />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/mainpage" element={<Mainpage />} />
+      <Route path="/customize" element={<Customize />} />
+    </Routes>
+  </BrowserRouter>
 );

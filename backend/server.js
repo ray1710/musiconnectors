@@ -145,7 +145,7 @@ app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
     const albums = await getAlbumsFromGenres(genre, spotifyToken);
     result = result.concat(albums);
   }
-  result = shuffle(result);
+  result = await shuffle(result);
   res.status(200).json({ result });
 });
 
