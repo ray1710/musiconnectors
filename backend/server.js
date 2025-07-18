@@ -115,16 +115,8 @@ function getArtistsFromAlbums(arr) {
 }
 
 function getTracksFromAlbums(tracks) {
-  let res = [];
   console.log(tracks);
-  for (let i = 0; i < tracks.items.length; i++) {
-    res.push({
-      track_num: tracks.items[i].track_number,
-      track_name: tracks.items[i].name,
-      artist: getArtistsFromAlbums(tracks.items[i].artists),
-    });
-  }
-  return res;
+  return [];
 }
 const verifyToken = (req, res, next) => {
   const auth = req.headers.authorization;
