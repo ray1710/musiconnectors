@@ -7,6 +7,7 @@ import Login from "./pages/login";
 import Signup from "./pages/signup";
 import Mainpage from "./pages/mainpage";
 import Customize from "./pages/customize";
+import Albumpage from "./pages/albumpage";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -16,6 +17,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/signup" element={<Signup />} />
       <Route path="/mainpage" element={<Mainpage />} />
       <Route path="/customize" element={<Customize />} />
+      <Route path="/album/:id" element={<Albumpage />} />
     </Routes>
   </BrowserRouter>
 );

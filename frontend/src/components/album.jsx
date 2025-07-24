@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import ColorThief from "colorthief";
+import { useNavigate } from "react-router-dom";
 
 function Album({ album }) {
+  const navigate = useNavigate();
   const imgRef = useRef(null);
   const [dominantColor, setDominantColor] = useState("rgba(0,0,0,0)");
 
@@ -24,8 +26,11 @@ function Album({ album }) {
         console.error("Error getting color:", err);
       }
     }
-    console.log(album);
   }, [album.img]);
+
+  function goTo() {
+    navigate(`/album/${album.id}`);
+  }
 
   return (
     <div
@@ -52,7 +57,10 @@ function Album({ album }) {
       <div className="flex flex-col justify-center items-start flex-1">
         <h2 className="text-2xl font-semibold mb-2">{album.name}</h2>
         <p className="text-sm opacity-80 mb-4">Artist: {album.artist}</p>
-        <button className="mt-auto bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition">
+        <button
+          className="mt-auto bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition"
+          onClick={goTo}
+        >
           View Album
         </button>
       </div>
