@@ -51,7 +51,7 @@ export async function getAlbumsFromGenres(genre, token) {
   let artists;
   try {
     const result = await axios.get(
-      `https://api.spotify.com/v1/search?q=genre%3A${genre}&type=artist&limit=5`,
+      `https://api.spotify.com/v1/search?q=genre%3A${genre}&type=artist&limit=15`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -153,13 +153,12 @@ app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
   const user = await User.findOne({ username }).exec();
   const spotifyToken = await getSpotifyToken();
   let genres = user.genres;
-  let result = [];
+  let result = {};
 
   for (const genre of genres) {
     const albums = await getAlbumsFromGenres(genre, spotifyToken);
-    result = result.concat(albums);
+    result[genre] = albums;
   }
-  result = await shuffle(result);
   res.status(200).json({ result });
 });
 
