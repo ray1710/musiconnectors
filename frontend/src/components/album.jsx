@@ -26,7 +26,6 @@ function Album({ album }) {
         console.error("Error getting color:", err);
       }
     }
-    console.log(album);
   }, [album.img]);
 
   function goTo() {
