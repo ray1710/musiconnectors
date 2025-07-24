@@ -34,7 +34,7 @@ function Album({ album }) {
 
   return (
     <div
-      className="w-[800px] h-[315px] rounded-lg transition duration-300 p-4 shadow-md border border-white/10 text-white flex items-center justify-between gap-6"
+      className="w-[600] h-[315px] rounded-lg transition duration-300 p-4 shadow-md border border-white/10 text-white flex items-center justify-between gap-6"
       style={{
         backgroundColor: "transparent",
         transition: "background-color 0.3s ease-in-out",
@@ -53,17 +53,6 @@ function Album({ album }) {
         crossOrigin="anonymous"
         className="w-70 h-70 object-cover rounded"
       />
-
-      <div className="flex flex-col justify-center items-start flex-1">
-        <h2 className="text-2xl font-semibold mb-2">{album.name}</h2>
-        <p className="text-sm opacity-80 mb-4">Artist: {album.artist}</p>
-        <button
-          className="mt-auto bg-white text-black px-4 py-2 rounded hover:bg-gray-200 transition"
-          onClick={goTo}
-        >
-          View Album
-        </button>
-      </div>
     </div>
   );
 }
