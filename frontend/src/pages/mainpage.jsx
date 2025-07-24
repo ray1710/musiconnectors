@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Album from "../components/album";
+import Browse from "../components/browse";
 
 export default function MainPage() {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ export default function MainPage() {
             },
           }
         );
+        console.log(res.data.result);
         setAlbums(res.data.result);
       } catch (error) {
         console.error("Error fetching albums:", error);
@@ -61,40 +62,11 @@ export default function MainPage() {
         Placeholder
       </h1>
 
-      {user && albums.length > 0 ? (
-        <div className="p-8 dark:text-white">
-          <h1 className="text-2xl mb-4 text-center">
-            Welcome, {user.username}
-          </h1>
-
-          <div className="relative">
-            <button
-              onClick={scrollLeft}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/60 text-white p-2 rounded-full hover:bg-black transition"
-            >
-              ◀
-            </button>
-
-            <button
-              onClick={scrollRight}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/60 text-white p-2 rounded-full hover:bg-black transition"
-            >
-              ▶
-            </button>
-
-            <div
-              ref={scrollRef}
-              className="overflow-x-auto scrollbar-hidden px-10 scroll-smooth"
-            >
-              <div className="flex gap-6 w-fit py-4">
-                {albums.map((album, index) => (
-                  <div key={index} className="shrink-0 w-[320px]">
-                    <Album album={album} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      {user && albums.length != 0 ? (
+        <div>
+          {Object.keys(albums).map((key) => (
+            <Browse key={key} genre={key} list={albums[key]}></Browse>
+          ))}
         </div>
       ) : (
         <p className="text-white p-8">Loading user profile...</p>
