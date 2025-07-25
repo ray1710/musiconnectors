@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Browse from "../components/browse";
+import Header from "../components/header";
 import { useAlbumContext } from "../context/albumContext";
 
 export default function MainPage() {
@@ -50,22 +51,11 @@ export default function MainPage() {
     getAlbums();
   }, [navigate, albums, setAlbums]);
 
-  const scrollLeft = () => {
-    scrollRef.current?.scrollBy({ left: -400, behavior: "smooth" });
-  };
-
-  const scrollRight = () => {
-    scrollRef.current?.scrollBy({ left: 400, behavior: "smooth" });
-  };
-
   return (
     <Fragment>
-      <h1 className="mt-6 text-center text-3xl font-extrabold dark:text-white p-8">
-        Placeholder
-      </h1>
-
       {user && albums ? (
         <div>
+          <Header user={user} setUser={setUser} />
           {Object.keys(albums).map((key) => (
             <Browse key={key} genre={key} list={albums[key]} />
           ))}
