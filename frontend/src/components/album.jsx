@@ -5,28 +5,28 @@ import { useNavigate } from "react-router-dom";
 function Album({ album }) {
   const navigate = useNavigate();
   const imgRef = useRef(null);
-  const [dominantColor, setDominantColor] = useState("rgba(0,0,0,0)");
+  const [dominantColor, setDominantColor] = useState("rgba(0,0,0,0.5)");
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     const image = imgRef.current;
 
-    if (album.image && image.complete) {
+    function extractColor() {
+      try {
+        const colorThief = new ColorThief();
+        const [r, g, b] = colorThief.getColor(image);
+        setDominantColor(`rgba(${r}, ${g}, ${b}, 0.85)`);
+      } catch (err) {
+        console.error("ColorThief failed:", err);
+      }
+    }
+
+    if (image && image.complete) {
       extractColor();
     } else {
       image.onload = extractColor;
     }
-
-    function extractColor() {
-      try {
-        const colorThief = new ColorThief();
-        const result = colorThief.getColor(image);
-        const [r, g, b] = result;
-        setDominantColor(`rgba(${r}, ${g}, ${b}, 0.8)`);
-      } catch (err) {
-        console.error("Error getting color:", err);
-      }
-    }
-  }, [album.img]);
+  }, [album.image]);
 
   function goTo() {
     navigate(`/album/${album.id}`);
@@ -34,16 +34,12 @@ function Album({ album }) {
 
   return (
     <div
-      className="w-[600] h-[315px] rounded-lg transition duration-300 p-4 shadow-md border border-white/10 text-white flex items-center justify-between gap-6"
+      onClick={goTo}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="w-60 shrink-0 rounded-lg overflow-hidden cursor-pointer transition duration-300 border border-white/10 hover:scale-105"
       style={{
-        backgroundColor: "transparent",
-        transition: "background-color 0.3s ease-in-out",
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = dominantColor;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "transparent";
+        backgroundColor: hovered ? dominantColor : "rgba(255,255,255,0.05)",
       }}
     >
       <img
@@ -51,8 +47,12 @@ function Album({ album }) {
         src={album.image}
         alt={album.name}
         crossOrigin="anonymous"
-        className="w-70 h-70 object-cover rounded"
+        className="w-full h-60 object-cover"
       />
+      <div className="p-3 text-white">
+        <p className="text-base font-semibold truncate">{album.name}</p>
+        <p className="text-sm text-gray-300 truncate">{album.artist}</p>
+      </div>
     </div>
   );
 }
