@@ -68,7 +68,7 @@ export default function AlbumPage() {
         <div className="flex gap-8">
           <img
             ref={imgRef}
-            src={album.image || "/placeholder.jpg"}
+            src={album.image}
             alt={album.name}
             crossOrigin="anonymous"
             className="w-64 h-64 object-cover rounded"

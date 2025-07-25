@@ -1,12 +1,14 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Album from "../components/album";
+import Browse from "../components/browse";
+import { useAlbumContext } from "../context/albumContext";
 
 export default function MainPage() {
   const navigate = useNavigate();
+  const scrollRef = useRef(null);
   const [user, setUser] = useState(null);
-  const [albums, setAlbums] = useState([]);
+  const { albums, setAlbums } = useAlbumContext();
 
   useEffect(() => {
     async function getProfile() {
@@ -25,44 +27,51 @@ export default function MainPage() {
     }
 
     async function getAlbums() {
-      try {
-        const token = localStorage.getItem("Token");
-        const res = await axios.get(
-          "http://localhost:3000/reccommendedAlbums",
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-        setAlbums(res.data.result);
-      } catch (error) {
-        console.error("Error fetching albums:", error);
+      if (!albums) {
+        try {
+          const token = localStorage.getItem("Token");
+          const res = await axios.get(
+            "http://localhost:3000/reccommendedAlbums",
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          console.log(res.data.result);
+          setAlbums(res.data.result); // Save to context
+        } catch (error) {
+          console.error("Error fetching albums:", error);
+        }
       }
     }
 
     getProfile();
     getAlbums();
-  }, []);
+  }, [navigate, albums, setAlbums]);
+
+  const scrollLeft = () => {
+    scrollRef.current?.scrollBy({ left: -400, behavior: "smooth" });
+  };
+
+  const scrollRight = () => {
+    scrollRef.current?.scrollBy({ left: 400, behavior: "smooth" });
+  };
 
   return (
     <Fragment>
       <h1 className="mt-6 text-center text-3xl font-extrabold dark:text-white p-8">
         Placeholder
       </h1>
+
       {user && albums ? (
-        <div className="p-8 dark:text-white">
-          <h1 className="text-2xl mb-4 text-center">
-            Welcome, {user.username}
-          </h1>
-          <div className="flex flex-col items-center gap-6">
-            {albums.map((album, index) => (
-              <Album key={index} album={album} />
-            ))}
-          </div>
+        <div>
+          {Object.keys(albums).map((key) => (
+            <Browse key={key} genre={key} list={albums[key]} />
+          ))}
         </div>
       ) : (
-        <p>Loading user profile...</p>
+        <p className="text-white p-8">Loading user profile...</p>
       )}
     </Fragment>
   );
