@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAlbumContext } from "../context/albumContext";
+import { useUserContext } from "../context/userContext";
 
 function Header({ user, setUser }) {
   const navigate = useNavigate();
@@ -11,6 +12,10 @@ function Header({ user, setUser }) {
     setUser(null);
     setAlbums(null);
     navigate("/");
+  };
+
+  const handleProfile = () => {
+    navigate("/profile");
   };
 
   return (
@@ -26,6 +31,12 @@ function Header({ user, setUser }) {
         {user && (
           <p className="text-sm text-gray-300">Welcome, {user.username}</p>
         )}
+        <button
+          onClick={handleProfile}
+          className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
+        >
+          Profile
+        </button>
         <button
           onClick={handleLogout}
           className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded transition"

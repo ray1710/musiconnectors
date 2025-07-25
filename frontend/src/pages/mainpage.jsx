@@ -4,26 +4,27 @@ import { useNavigate } from "react-router-dom";
 import Browse from "../components/browse";
 import Header from "../components/header";
 import { useAlbumContext } from "../context/albumContext";
+import { useUserContext } from "../context/userContext";
 
 export default function MainPage() {
   const navigate = useNavigate();
   const scrollRef = useRef(null);
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useUserContext();
   const { albums, setAlbums } = useAlbumContext();
 
   useEffect(() => {
     async function getProfile() {
-      try {
-        const token = localStorage.getItem("Token");
-        const res = await axios.get("http://localhost:3000/currentuser", {
-          headers: {
-            Authorization: token,
-          },
-        });
-        setUser(res.data.user);
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        navigate("/");
+      if (!user) {
+        try {
+          const token = localStorage.getItem("Token");
+          const res = await axios.get("http://localhost:3000/currentuser", {
+            headers: { Authorization: token },
+          });
+          setUser(res.data.user);
+        } catch (err) {
+          console.error("Error fetching profile", err);
+          navigate("/");
+        }
       }
     }
 
@@ -40,7 +41,7 @@ export default function MainPage() {
             }
           );
           console.log(res.data.result);
-          setAlbums(res.data.result); // Save to context
+          setAlbums(res.data.result);
         } catch (error) {
           console.error("Error fetching albums:", error);
         }
@@ -49,7 +50,7 @@ export default function MainPage() {
 
     getProfile();
     getAlbums();
-  }, [navigate, albums, setAlbums]);
+  }, [navigate, albums, setAlbums, user, setUser]);
 
   return (
     <Fragment>
