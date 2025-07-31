@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { useUserContext } from "../context/userContext";
 
 export default function Profile() {
@@ -8,11 +9,47 @@ export default function Profile() {
   }
 
   return (
-    <div className="text-white p-8">
-      <h1 className="text-3xl font-bold mb-4">Your Profile</h1>
-      <p>Username: {user.username}</p>
-      <p>Email: {user.email}</p>
-      {/* etc... */}
-    </div>
+    <Fragment>
+      <div className=" text-white">
+        <div className="flex justify-between items-center bg-black text-white border-b border-gray-700 p-5 h-60">
+          {/* Left side: Profile Pic + Username + Details */}
+          <div className="flex items-center">
+            <img
+              src="https://i.scdn.co/image/ab67616d00001e02cc392813bfd8f63d4d5f4a95"
+              alt="Profile"
+              className="w-50 h-50 rounded-full object-cover"
+            />
+            <div className="ml-6 flex flex-col justify-center gap-2">
+              <h1 className="font-extrabold text-3xl">{user.username}</h1>
+              <div className="text-gray-300 text-sm"></div>
+            </div>
+          </div>
+
+          {/* Right side: Badges */}
+          <div className="flex flex-wrap gap-2">
+            <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              Top Reviewer
+            </span>
+            <span className="bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              Verified
+            </span>
+            <span className="bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+              Early Adopter
+            </span>
+          </div>
+        </div>
+
+        {/* Favorites Section */}
+        <div className="mt-8 p-5">
+          <h2 className="text-2xl font-semibold mb-4">Favorite Albums</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"></div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-10 p-5">
+          <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
+        </div>
+      </div>
+    </Fragment>
   );
 }
