@@ -185,6 +185,19 @@ app.get("/album/:id", async (req, res) => {
   });
 });
 
+app.get("/profile/:username", async (req, res) => {
+  const user = await User.findOne({ username: req.params.username });
+  if (user != "") {
+    res.status(200).json({
+      username: user.username,
+      favArtist: user.favArtist,
+      favSong: user.favSong,
+      createdAt: user.createdAt,
+      likedAlbum: user.likedAlbums,
+    });
+  }
+});
+
 /**
  * New user
  */
@@ -207,7 +220,11 @@ app.post("/signup", async (req, res) => {
   }
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = new User({ username, email, password: hashedPassword });
+  const newUser = new User({
+    username,
+    email,
+    password: hashedPassword,
+  });
   try {
     await newUser.save();
     res.status(200).json({ message: "Valid Account Creation" });
