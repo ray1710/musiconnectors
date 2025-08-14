@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/mainpage" element={<Mainpage />} />
           <Route path="/customize" element={<Customize />} />
           <Route path="/album/:id" element={<Albumpage />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="profile/:username" element={<Profile />} />
         </Routes>
       </BrowserRouter>
     </AlbumProvider>

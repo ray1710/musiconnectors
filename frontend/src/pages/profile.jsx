@@ -1,15 +1,35 @@
-import { Fragment } from "react";
-import { useUserContext } from "../context/userContext";
+import { Fragment, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Header from "../components/header";
+import axios from "axios";
 
 export default function Profile() {
-  const { user } = useUserContext();
+  const [user, setUser] = useState();
+  const { username } = useParams();
+
+  useEffect(() => {
+    async function getProfile() {
+      console.log("Fetching profile for:", username);
+      const res = await axios.get(`http://localhost:3000/profile/${username}`);
+      setUser(res.data);
+    }
+    getProfile();
+  }, [username]);
 
   if (!user) {
     return <p className="text-white p-4">Loading profile...</p>;
   }
 
+  function convertToMonth(d) {
+    d = d.slice(0, 9);
+    const dateObj = new Date(d); // create a Date object from the string
+    const options = { month: "long", year: "numeric" };
+    return dateObj.toLocaleDateString("en-US", options);
+  }
+
   return (
     <Fragment>
+      <Header></Header>
       <div className=" text-white">
         <div className="flex justify-between items-center bg-black text-white border-b border-gray-700 p-5 h-60">
           {/* Left side: Profile Pic + Username + Details */}
@@ -21,6 +41,7 @@ export default function Profile() {
             />
             <div className="ml-6 flex flex-col justify-center gap-2">
               <h1 className="font-extrabold text-3xl">{user.username}</h1>
+              <p>Joined: {convertToMonth(user.createdAt)}</p>
               <div className="text-gray-300 text-sm"></div>
             </div>
           </div>

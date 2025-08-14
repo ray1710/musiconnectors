@@ -15,7 +15,12 @@ function Header({ user, setUser }) {
   };
 
   const handleProfile = () => {
-    navigate("/profile");
+    console.log(user);
+    navigate(`/profile/${user.username}`);
+  };
+
+  const handleMain = () => {
+    navigate(`/mainpage`);
   };
 
   return (
@@ -31,6 +36,12 @@ function Header({ user, setUser }) {
         {user && (
           <p className="text-sm text-gray-300">Welcome, {user.username}</p>
         )}
+        <button
+          onClick={handleMain}
+          className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
+        >
+          Main Page
+        </button>
         <button
           onClick={handleProfile}
           className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
