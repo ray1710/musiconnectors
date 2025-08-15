@@ -8,19 +8,24 @@ import Signup from "./pages/signup";
 import Mainpage from "./pages/mainpage";
 import Customize from "./pages/customize";
 import Albumpage from "./pages/albumpage";
+import Profile from "./pages/profile";
 import { AlbumProvider } from "./context/albumContext";
+import { UserProvider } from "./context/userContext";
 
 createRoot(document.getElementById("root")).render(
-  <AlbumProvider>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/mainpage" element={<Mainpage />} />
-        <Route path="/customize" element={<Customize />} />
-        <Route path="/album/:id" element={<Albumpage />} />
-      </Routes>
-    </BrowserRouter>
-  </AlbumProvider>
+  <UserProvider>
+    <AlbumProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Homepage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/mainpage" element={<Mainpage />} />
+          <Route path="/customize" element={<Customize />} />
+          <Route path="/album/:id" element={<Albumpage />} />
+          <Route path="profile/:username" element={<Profile />} />
+        </Routes>
+      </BrowserRouter>
+    </AlbumProvider>
+  </UserProvider>
 );

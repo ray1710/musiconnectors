@@ -35,7 +35,7 @@ function Browse({ genre, list }) {
           ref={scrollRef}
           className="overflow-x-auto scrollbar-hidden px-10 scroll-smooth"
         >
-          <div className="flex gap-6 w-fit py-4">
+          <div className="flex w-fit py-4">
             {list.map((album, index) => (
               <div key={index} className="shrink-0 w-[320px]">
                 <Album album={album} />

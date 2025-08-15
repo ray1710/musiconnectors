@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
   password: String,
   age: Number,
   genres: [String],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  likedAlbums: [Object],
   favSong: String,
   favArtist: String,
   favLyric: String,
