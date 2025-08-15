@@ -47,52 +47,61 @@ export async function getSpotifyToken() {
   }
 }
 
+function chunkArray(array, size) {
+  const chunks = [];
+  for (let i = 0; i < array.length; i += size) {
+    chunks.push(array.slice(i, i + size));
+  }
+  return chunks;
+}
+
 export async function getAlbumsFromGenres(genre, token) {
   let artists;
   try {
     const result = await axios.get(
       `https://api.spotify.com/v1/search?q=genre%3A${genre}&type=artist&limit=15`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     artists = result.data.artists.items;
   } catch (error) {
     console.log("Spotify API Error: Failed to Fetch Artists");
     throw error;
   }
-  const artistIds = artists
-    .filter((artist) => artist.id)
-    .map((artist) => artist.id);
-  let albums = [];
-  for (let i = 0; i < artistIds.length; i++) {
-    try {
-      const result = await axios.get(
-        `https://api.spotify.com/v1/artists/${artistIds[i]}/albums?include_groups=album&limit=1`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+
+  const artistIds = artists.filter((a) => a.id).map((a) => a.id);
+  const albums = [];
+
+  const batches = chunkArray(artistIds, 5);
+
+  for (const batch of batches) {
+    const results = await Promise.all(
+      batch.map(async (id) => {
+        try {
+          const result = await axios.get(
+            `https://api.spotify.com/v1/artists/${id}/albums?include_groups=album&limit=1`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const items = result.data.items;
+          if (items.length > 0) {
+            return {
+              name: items[0].name,
+              artist: getArtistsFromAlbums(items[0].artists),
+              num_of_tracks: items[0].total_tracks,
+              release_date: items[0].release_date,
+              image: items[0].images[1]?.url,
+              id: items[0].id,
+            };
+          }
+        } catch (error) {
+          console.log("Spotify API Error: Failed to Fetch Albums");
+          return null;
         }
-      );
-      let items = result.data.items;
-      if (items.length != 0) {
-        albums.push({
-          name: items[0].name,
-          artist: getArtistsFromAlbums(items[0].artists),
-          num_of_tracks: items[0].total_tracks,
-          release_date: items[0].release_date,
-          image: items[0].images[1].url,
-          id: items[0].id,
-        });
-      }
-    } catch (error) {
-      console.log("Spotify API Error: Failed to Fetch Albums");
-      throw error;
-    }
+      })
+    );
+
+    albums.push(...results.filter(Boolean));
   }
+
   return albums;
 }
 
@@ -152,14 +161,18 @@ app.get("/reccommendedAlbums", verifyToken, async (req, res) => {
   const username = req.user.username;
   const user = await User.findOne({ username }).exec();
   const spotifyToken = await getSpotifyToken();
-  let genres = user.genres;
-  let result = {};
+  const genres = user.genres;
 
-  for (const genre of genres) {
-    const albums = await getAlbumsFromGenres(genre, spotifyToken);
-    result[genre] = albums;
-  }
-  res.status(200).json({ result });
+  // Still parallelize genres, but also could batch them if needed
+  const results = await Promise.all(
+    genres.map(async (genre) => {
+      const albums = await getAlbumsFromGenres(genre, spotifyToken);
+      return { genre, albums };
+    })
+  );
+
+  const resultObj = Object.fromEntries(results.map((r) => [r.genre, r.albums]));
+  res.status(200).json({ result: resultObj });
 });
 
 app.get("/album/:id", async (req, res) => {
