@@ -11,58 +11,87 @@ export default function MainPage() {
   const scrollRef = useRef(null);
   const { user, setUser } = useUserContext();
   const { albums, setAlbums } = useAlbumContext();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function getProfile() {
-      if (!user) {
-        try {
-          const token = localStorage.getItem("Token");
-          const res = await axios.get("http://localhost:3000/currentuser", {
-            headers: { Authorization: token },
-          });
-          setUser(res.data.user);
-        } catch (err) {
-          console.error("Error fetching profile", err);
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const token = localStorage.getItem("Token");
+        if (!token) {
+          navigate("/");
+          return;
+        }
+
+        const promises = [];
+
+        // Only fetch user if not already loaded
+        if (!user) {
+          promises.push(
+            axios.get("http://localhost:3000/currentuser", {
+              headers: { Authorization: token },
+            })
+          );
+        }
+
+        // Only fetch albums if not already loaded
+        if (!albums) {
+          promises.push(
+            axios.get("http://localhost:3000/trendingAlbums", {
+              headers: { Authorization: token },
+            })
+          );
+        }
+
+        if (promises.length > 0) {
+          const results = await Promise.all(promises);
+
+          let resultIndex = 0;
+          console.log(results);
+          if (!user && results[resultIndex]) {
+            setUser(results[resultIndex].data.user);
+            resultIndex++;
+          }
+
+          if (!albums && results[resultIndex]) {
+            setAlbums(results[resultIndex].data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load data");
+        if (err.response?.status === 401) {
           navigate("/");
         }
+      } finally {
+        setLoading(false);
       }
     }
 
-    async function getAlbums() {
-      if (!albums) {
-        try {
-          const token = localStorage.getItem("Token");
-          const res = await axios.get(
-            "http://localhost:3000/reccommendedAlbums",
-            {
-              headers: {
-                Authorization: token,
-              },
-            }
-          );
-          console.log(res.data.result);
-          setAlbums(res.data.result);
-        } catch (error) {
-          console.error("Error fetching albums:", error);
-        }
-      }
-    }
+    fetchData();
+  }, []); // Empty dependency array to run only once
 
-    getProfile();
-    getAlbums();
-  }, [navigate, albums, setAlbums, user, setUser]);
+  if (loading) {
+    return <p className="text-white p-8">Loading user profile...</p>;
+  }
+
+  if (error) {
+    return <p className="text-white p-8">Error: {error}</p>;
+  }
 
   return (
     <Fragment>
       {user && albums ? (
         <div>
-          <Header user={user} setUser={setUser} />
-          {Object.keys(albums).map((key) => (
-            <Browse key={key} genre={key} list={albums[key]} />
-          ))}
+          {/* Your actual content here */}
+          <Header />
+          <Browse genre="Trending" list={albums}></Browse>
         </div>
       ) : (
-        <p className="text-white p-8">Loading user profile...</p>
+        <p className="text-white p-8">Data not available</p>
       )}
     </Fragment>
   );

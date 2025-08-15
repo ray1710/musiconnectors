@@ -226,7 +226,7 @@ app.get("/trendingAlbums", async (req, res) => {
         name: album.name,
         artists: album.artists.map((a) => a.name),
         release_date: album.release_date,
-        images: album.images[1],
+        image: album.images[1].url,
       });
     }
   });
