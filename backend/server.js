@@ -224,7 +224,7 @@ app.get("/trendingAlbums", async (req, res) => {
       albumsMap.set(album.id, {
         id: album.id,
         name: album.name,
-        artists: album.artists.map((a) => a.name),
+        artist: getArtistsFromAlbums(album.artists),
         release_date: album.release_date,
         image: album.images[1].url,
       });

@@ -14,7 +14,7 @@ function Browse({ genre, list }) {
 
   return (
     <div className="p-8 dark:text-white">
-      <h2 className="text-xl font-bold mb-2">{genre}</h2>
+      <h2 className="text-white text-2xl font-bold mb-6">{genre}</h2>
 
       <div className="relative">
         <button
