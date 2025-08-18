@@ -15,45 +15,69 @@ function Header({ user, setUser }) {
   };
 
   const handleProfile = () => {
-    console.log(user);
     navigate(`/profile/${user.username}`);
   };
 
   const handleMain = () => {
-    navigate(`/mainpage`);
+    navigate(`/`);
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleSignup = () => {
+    navigate("/signup");
   };
 
   return (
     <header className="bg-black text-white px-6 py-4 flex justify-between items-center shadow-md">
       <h1
         className="text-xl font-bold cursor-pointer"
-        onClick={() => navigate("/main")}
+        onClick={() => navigate("/")}
       >
         PlaceHolder
       </h1>
 
       <div className="flex items-center gap-4">
-        {user && (
-          <p className="text-sm text-gray-300">Welcome, {user.username}</p>
+        {user ? (
+          <>
+            <p className="text-sm text-gray-300">Welcome, {user.username}</p>
+            <button
+              onClick={handleMain}
+              className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
+            >
+              Main Page
+            </button>
+            <button
+              onClick={handleProfile}
+              className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
+            >
+              Profile
+            </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded transition"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={handleLogin}
+              className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
+            >
+              Login
+            </button>
+            <button
+              onClick={handleSignup}
+              className="bg-green-600 hover:bg-green-800 text-white px-4 py-1.5 rounded transition"
+            >
+              Sign Up
+            </button>
+          </>
         )}
-        <button
-          onClick={handleMain}
-          className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
-        >
-          Main Page
-        </button>
-        <button
-          onClick={handleProfile}
-          className="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded transition"
-        >
-          Profile
-        </button>
-        <button
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded transition"
-        >
-          Logout
-        </button>
       </div>
     </header>
   );
