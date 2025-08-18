@@ -17,10 +17,9 @@ createRoot(document.getElementById("root")).render(
     <AlbumProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Homepage />} />
+          <Route path="/" element={<Mainpage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/mainpage" element={<Mainpage />} />
           <Route path="/customize" element={<Customize />} />
           <Route path="/album/:id" element={<Albumpage />} />
           <Route path="profile/:username" element={<Profile />} />

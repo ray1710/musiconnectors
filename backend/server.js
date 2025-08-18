@@ -96,13 +96,25 @@ export async function getAlbumsFromGenres(genre, token) {
   return albums;
 }
 
-function shuffle(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+async function getTrendingAlbums(token) {
+  let playlist;
+  try {
+    const result = await axios.get(
+      `https://api.spotify.com/v1/playlists/6UeSakyzhiEt4NB3UAd6NQ`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    playlist = result.data.tracks.items;
+    return playlist;
+  } catch (error) {
+    console.log("Spotify API Error: Failed to Fetch Playlist");
+    throw error;
   }
-  return array;
 }
+
 function getArtistsFromAlbums(arr) {
   let artists = "";
   for (let i = 0; i < arr.length; i++) {
@@ -196,6 +208,32 @@ app.get("/profile/:username", async (req, res) => {
       likedAlbum: user.likedAlbums,
     });
   }
+});
+
+app.get("/trendingAlbums", async (req, res) => {
+  const token = await getSpotifyToken();
+  const tracks = await getTrendingAlbums(token);
+
+  const albumsMap = new Map();
+
+  tracks.forEach((track) => {
+    const album = track.track.album;
+    if (album.album_type === "single") return;
+
+    if (!albumsMap.has(album.id)) {
+      albumsMap.set(album.id, {
+        id: album.id,
+        name: album.name,
+        artist: getArtistsFromAlbums(album.artists),
+        release_date: album.release_date,
+        image: album.images[1].url,
+      });
+    }
+  });
+
+  const uniqueAlbums = Array.from(albumsMap.values());
+
+  res.status(200).json(uniqueAlbums);
 });
 
 /**
