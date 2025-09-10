@@ -85,7 +85,7 @@ export default function MainPage() {
     <Fragment>
       {albums ? (
         <div>
-          <Header user={user} setUser={setUser} />
+          <Header />
           <Browse genre="Trending" list={albums} />
           {user ? (
             <div></div>
