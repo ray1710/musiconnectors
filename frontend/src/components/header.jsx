@@ -3,39 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { useAlbumContext } from "../context/albumContext";
 import { useUserContext } from "../context/userContext";
 
-function Header({ user, setUser }) {
-  const navigate = useNavigate();
+function Header() {
+  const { setUser, user } = useUserContext();
   const { setAlbums } = useAlbumContext();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("Token");
     setUser(null);
-    setAlbums(null);
     navigate("/");
   };
 
-  const handleProfile = () => {
-    navigate(`/profile/${user.username}`);
-  };
-
-  const handleMain = () => {
-    navigate(`/`);
-  };
-
-  const handleLogin = () => {
-    navigate("/login");
-  };
-
-  const handleSignup = () => {
-    navigate("/signup");
-  };
+  const handleProfile = () => navigate(`/profile/${user.username}`);
+  const handleMain = () => navigate(`/`);
+  const handleLogin = () => navigate("/login");
+  const handleSignup = () => navigate("/signup");
 
   return (
-    <header className="bg-black text-white px-6 py-4 flex justify-between items-center shadow-md">
-      <h1
-        className="text-xl font-bold cursor-pointer"
-        onClick={() => navigate("/")}
-      >
+    <header className="bg-black text-white px-6 py-4 flex justify-between items-center shadow-md border-1 border-gray-950">
+      <h1 className="text-xl font-bold cursor-pointer" onClick={handleMain}>
         PlaceHolder
       </h1>
 
